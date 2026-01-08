@@ -1,0 +1,19 @@
+rule gootloader_zip_archive_2025_11_17 : malware {
+    meta:
+        name        = "gootloader_zip_archive"
+        description = "Detects unique ZIP archive format used by Gootloader"
+        created     = "2025-11-17"
+        reliability = 100
+        tlp         = "TLP:CLEAR"
+        sample      = "b05eb7a367b5b86f8527af7b14e97b311580a8ff73f27eaa1fb793abb902dc6e"
+
+	strings:
+		$zip_record_and_attacker_zip_parameters_hex = { 50 4B 03 04 ?? 00 00 00 08 00 } // check file header
+		$end_of_central_directory = { 50 4B 05 06 0? 00 0? 00 00 00 01 00 ?? ?? 00 00 ?? ?? ?? 00 } 
+
+    condition:
+		$zip_record_and_attacker_zip_parameters_hex at 0 
+		and #zip_record_and_attacker_zip_parameters_hex > 100
+		and #end_of_central_directory > 100
+}
+
